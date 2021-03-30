@@ -86,7 +86,6 @@ namespace videochat_udp
             /*Every new frame will be sended to another user */
             if(remoteAddress.ToString() != "0.0.0.0" && remoteAddress != null)
             {
-               // MessageBox.Show("Start Frame sended");
                 SendVideo(endPoint, actualFrame);
                
             }
@@ -109,7 +108,6 @@ namespace videochat_udp
             MemoryStream ms = new MemoryStream();
             img.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
             Byte[] arrImage = ms.ToArray();
-            //MessageBox.Show("Rozmiar arrImage = ", arrImage.Length.ToString());
             if (arrImage.Length < 60000)
             {
                 listeningSocket.SendTo(arrImage, endPoint);
@@ -134,7 +132,6 @@ namespace videochat_udp
                         listeningSocket.SendTo(arrImage, drift, fixedLength, SocketFlags.None, endPoint);
                     }
                 }
-               // MessageBox.Show("Completed!");
             }
         }
 
@@ -200,7 +197,6 @@ namespace videochat_udp
                     }
                     Image rcvdImage = (Bitmap)((new ImageConverter()).ConvertFrom(ms.ToArray()));
                     friendVideoPictureBox.Image = filterSize.Apply((Bitmap)rcvdImage);
-                  //  MessageBox.Show("FILE GETTED!");
                 }
             }
             catch (Exception eR)
