@@ -16,109 +16,99 @@ namespace videochat_udp
 {
     public partial class Form1 : Form
     {
-        [Serializable]
-        public class FileDetails
-        {
-            public string FILESIZE = "";
-        }
-
         private Bitmap actualFrame;
 
+        /* Filter lustrzany oraz rozmiaru*/
         private Mirror filter = new Mirror(false, true);
-        private ResizeNearestNeighbor filterSize = new ResizeNearestNeighbor(454, 346);
+        private ResizeNearestNeighbor filterSize = new ResizeNearestNeighbor(481, 451);
 
-        private FileDetails fileDet = new FileDetails();
-        private FileDetails fileDet2 = new FileDetails();
-        private Thread receiveThread, sendThread;
+        /* Watek do odbierania wiadomosci */
+        private Thread receiveThread;
 
-        private byte[] sendedBytes;
-        private byte[] receivedBytes;
-
-        private Random random = new Random();
-        EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
-        private MemoryStream memStr = null;
-
+        /* Zmienne opisujace wideo urzadzenia */
         public FilterInfoCollection recordingDevices = null;
         public VideoCaptureDevice videoSource = null;
-        static IPAddress remoteAddress; // хост для отправки данных
-        static int remotePort; // порт для отправки данных
-        int localPort; // локальный порт для прослушивания входящих подключений
 
-        //UdpClient sender = null;
-        static Socket receiveSocket;
+        /* Adres na ktory wysylamy dane */
+        static IPAddress remoteAddress;
+        /* Port na ktory wysylamy dane */
+        static int remotePort;
+        /* Port na ktorym odbieramy dane */
+        int localPort; 
+
+        /* UDP klient do odbierania wiadomosci */
+        UdpClient client;
+        /* Adres IP odbiorcy naszych wiadomosci */
         IPEndPoint endPoint;
+        bool isMenuActivated = false, isMicrophoneEnabled = false, isCameraEnabled = false;
+        private System.Drawing.Point lastPoint;
 
         public Form1()
         {
             InitializeComponent();
-            try
-            {
-                //remoteAddress = IPAddress.Parse("127.0.0.1");
-                
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            SetStyles();
+            /* Tworzenie kolekcji dostepnych wideo urzadzen */
             recordingDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             foreach(FilterInfo f in recordingDevices)
             {
-                comboBox1.Items.Add(f.Name);
+                /* tworzenie listy dostepnych wideo urzadzen */
+                comboBox1.Items.Add(f.Name); 
             }
+            /* Domyslnie wybierane pierwsze urzadzenie */ 
             comboBox1.SelectedIndex = 0;
             videoSource = new VideoCaptureDevice();
-            /* Event which will be invoked when new frame is arrived */
-
-            
         }
 
         private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
+            /* Zwolnienie pamieci */
             if (actualFrame != null) actualFrame.Dispose();
+            /* Kopiowanie obrazka dostarczonego przez kamere */
             actualFrame = (Bitmap)eventArgs.Frame.Clone();
+            /* Zastosowanie filtra lustra */
             filter.ApplyInPlace(actualFrame);
+            /* Usuniecie poprzedniego obrazka u klienta */
             if (myVideoPictureBox.Image != null) this.Invoke(new MethodInvoker(delegate () { myVideoPictureBox.Image.Dispose(); }));
+            /* Zaladowanie nowego obrazka */
             myVideoPictureBox.Image = filterSize.Apply(actualFrame);
-            /*Every new frame will be sended to another user */
-            if(remoteAddress.ToString() != "0.0.0.0" && remoteAddress != null)
-            {
-                SendVideo(endPoint, actualFrame);
-               
-            }
+            /*Wyslanie obecnego obrazka do partnera*/
+            SendVideo(endPoint, actualFrame);
         }
-        UdpClient client;
+
         private void ReceiveMessage()
         {
+                /* Tworzenie UDP Clienta do odebrania wiadomosci na swoim porcie */
                 client = new UdpClient(localPort);
                 while (true)
                 {
-                    if(friendVideoPictureBox.Image!= null) friendVideoPictureBox.Image.Dispose();
+                    /* Usuniecie odebranego obrazka poprzedniego */
+                    if(myVideoPictureBox.Image!= null) myVideoPictureBox.Image.Dispose();
+                    /* Pobranie nowego obrazka */
                     GetFile();
                 }
         }
 
         public void SendVideo(IPEndPoint endPoint, Image img)
         {
-            ImageConverter _imageConverter = new ImageConverter();
+            /* socket do wyslania wiadomosci */
             Socket listeningSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            /* Zapisanie obrazka w strumieniu pamiecowym */
             MemoryStream ms = new MemoryStream();
             img.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+            /* Konwertowanie obrazka na tablice bajtow */
             Byte[] arrImage = ms.ToArray();
+            /* Funkcja wykonujaca segmentacje datagramow UDP */
             if (arrImage.Length < 60000)
-            {
                 listeningSocket.SendTo(arrImage, endPoint);
-            }
             else
             {
-
                 int parts = arrImage.Length / 60000;
                 int fixedLength = arrImage.Length;
                 int drift = 0;
-                FileStream fs = new FileStream("temp.jpeg", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
                 for (int i = 0; i < parts + 1; i++)
                 {
                     if (fixedLength - 60000 >= 0)
@@ -135,41 +125,21 @@ namespace videochat_udp
             }
         }
 
-        public static byte[] ImageToByte2(Image img)
-        {
-            using (var stream = new MemoryStream())
-            {
-                img.Save(stream, System.Drawing.Imaging.ImageFormat.Jpeg);
-                return stream.ToArray();
-            }
-        }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
-
+            /* Inicjalizacja portow oraz adresu */
             remoteAddress = IPAddress.Parse(textBox1.Text);
             remotePort = Convert.ToInt32(textBox3.Text);
             localPort = Convert.ToInt32(textBox2.Text);
 
             endPoint = new IPEndPoint(remoteAddress, remotePort);
             
+            /* Tworzenia watka do odbierania wiadomosci */
+            receiveThread = new Thread(new ThreadStart(ReceiveMessage));
+            receiveThread.Start();
 
-            if (remoteAddress.ToString() == "0.0.0.0")
-            {
-               // //receiveSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-                //IPEndPoint localIP = new IPEndPoint(IPAddress.Parse("0.0.0.0"), localPort);
-               // receiveSocket.Bind(localIP);
-
-                receiveThread = new Thread(new ThreadStart(ReceiveMessage));
-                receiveThread.Start();
-            }
-
-            if (remoteAddress.ToString() != "0.0.0.0" && remoteAddress != null)
-            {
-                //sendThread = new Thread(new ThreadStart(SendMessage));
-                //sendThread.Start();
-            }
+            /* Uruchomienie nagrywania kamerki */
             videoSource = new VideoCaptureDevice(recordingDevices[comboBox1.SelectedIndex].MonikerString);
             videoSource.NewFrame += new NewFrameEventHandler(VideoSource_NewFrame);
             videoSource.Start();
@@ -177,6 +147,7 @@ namespace videochat_udp
 
         private void button2_Click(object sender, EventArgs e)
         {
+            /* Zatrzymanie nagrywania kamerki */
             videoSource.Stop();
         }
          
@@ -191,19 +162,121 @@ namespace videochat_udp
                     MemoryStream ms = new MemoryStream();
                     for (int i=0;i<3;i++)
                     {
+                        /* Pobranie kolejnych danych */
                         Byte[] arrImage = client.Receive(ref endP);
+                        /* Dopisanie danych do strumienia */
                         ms.Write(arrImage, 0, arrImage.Length);
+                        /* Jezeli odebrany datagram <60000 to znaczy ze jest koncowy datagram wiec konczymy */
                         if (arrImage.Length < 60000) break;
                     }
+                    /* Konwertowanie tablicy bajtow na obrazek */
                     Image rcvdImage = (Bitmap)((new ImageConverter()).ConvertFrom(ms.ToArray()));
+                    /* Aktualizacja odebranego obrazka */
                     friendVideoPictureBox.Image = filterSize.Apply((Bitmap)rcvdImage);
                 }
             }
             catch (Exception eR)
             {
-                MessageBox.Show("GET FILE: " + eR.ToString() + "STACK TRACE: " + eR.StackTrace);
+                MessageBox.Show("Get file error: "+eR.ToString());
             }
-        } 
+        }
+
+        private void SetStyles()
+        {
+            label1.Visible = false;
+            localLbl.Visible = false;
+            remoteLbl.Visible = false;
+            textBox1.Visible = false;
+            textBox2.Visible = false;
+            textBox3.Visible = false;
+            button1.Visible = false;
+            button2.Visible = false;
+            comboBox1.Visible = false;
+            optionPanel.Size = new Size(42, 467);
+            headerPanel.BackColor = Color.FromArgb(1, 46, 103);
+            optionPanel.BackColor = Color.FromArgb(156, 172, 191);
+        }
+
+        private void pictureBox4_Click(object sender, EventArgs e)
+        {
+            if (!isMenuActivated)
+            {
+                optionPanel.Size = new Size(261, 467);
+                label1.Visible = true;
+                localLbl.Visible = true;
+                remoteLbl.Visible = true;
+                textBox1.Visible = true;
+                textBox2.Visible = true;
+                textBox3.Visible = true;
+                button1.Visible = true;
+                button2.Visible = true;
+                comboBox1.Visible = true;
+                isMenuActivated = true;
+            }
+            else
+            {
+                label1.Visible = false;
+                localLbl.Visible = false;
+                remoteLbl.Visible = false;
+                textBox1.Visible = false;
+                textBox2.Visible = false;
+                textBox3.Visible = false;
+                button1.Visible = false;
+                button2.Visible = false;
+                comboBox1.Visible = false;
+                optionPanel.Size = new Size(42, 467);
+                
+                isMenuActivated = false;
+            }
+        }
+
+        private void headerPanel_MouseDown(object sender, MouseEventArgs e)
+        {
+            lastPoint = new System.Drawing.Point(e.X, e.Y);
+        }
+
+
+        private void headerPanel_MouseMove(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Left)
+            {
+                this.Top += e.Y - lastPoint.Y;
+                this.Left += e.X - lastPoint.X;
+            }
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void microphoneBox_Click(object sender, EventArgs e)
+        {
+            if(isMicrophoneEnabled)
+            {
+                isMicrophoneEnabled = false;
+                microphoneBox.Image = Properties.Resources.offmicrophone;
+            }
+            else
+            {
+                isMicrophoneEnabled = true;
+                microphoneBox.Image = Properties.Resources.microphone;
+            }
+        }
+
+        private void cameraBox_Click(object sender, EventArgs e)
+        {
+            if (isCameraEnabled)
+            {
+                isCameraEnabled = false;
+                cameraBox.Image = Properties.Resources.offcamera;
+            }
+            else
+            {
+                isCameraEnabled = true;
+                cameraBox.Image = Properties.Resources.camera;
+            }
+        }
     }
 }
 
