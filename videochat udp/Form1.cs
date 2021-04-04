@@ -40,8 +40,12 @@ namespace videochat_udp
         UdpClient client;
         /* Adres IP odbiorcy naszych wiadomosci */
         IPEndPoint endPoint;
+
+        #region Program variables
         bool isMenuActivated = false, isMicrophoneEnabled = true, isCameraEnabled = true;
         private System.Drawing.Point lastPoint;
+        #endregion
+
 
         public Form1()
         {

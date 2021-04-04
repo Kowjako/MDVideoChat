@@ -166,16 +166,17 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Arial Rounded MT Bold", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.label2.ForeColor = System.Drawing.Color.White;
             this.label2.Location = new System.Drawing.Point(10, 16);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(173, 15);
+            this.label2.Size = new System.Drawing.Size(173, 16);
             this.label2.TabIndex = 0;
             this.label2.Text = "VideoChat by @maybedot";
             // 
             // optionPanel
             // 
+            this.optionPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.optionPanel.Controls.Add(this.materialLabel1);
             this.optionPanel.Controls.Add(this.remoteAudio);
             this.optionPanel.Controls.Add(this.localAudio);
@@ -360,7 +361,7 @@
             // 
             this.pictureBox4.Cursor = System.Windows.Forms.Cursors.Hand;
             this.pictureBox4.Image = global::videochat_udp.Properties.Resources.menuicon;
-            this.pictureBox4.Location = new System.Drawing.Point(6, 6);
+            this.pictureBox4.Location = new System.Drawing.Point(5, 7);
             this.pictureBox4.Name = "pictureBox4";
             this.pictureBox4.Size = new System.Drawing.Size(30, 30);
             this.pictureBox4.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
