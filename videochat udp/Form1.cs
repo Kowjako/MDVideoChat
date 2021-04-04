@@ -40,7 +40,7 @@ namespace videochat_udp
         UdpClient client;
         /* Adres IP odbiorcy naszych wiadomosci */
         IPEndPoint endPoint;
-        bool isMenuActivated = false, isMicrophoneEnabled = false, isCameraEnabled = false;
+        bool isMenuActivated = false, isMicrophoneEnabled = true, isCameraEnabled = true;
         private System.Drawing.Point lastPoint;
 
         public Form1()
@@ -125,32 +125,6 @@ namespace videochat_udp
             }
         }
 
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            /* Inicjalizacja portow oraz adresu */
-            remoteAddress = IPAddress.Parse(textBox1.Text);
-            remotePort = Convert.ToInt32(textBox3.Text);
-            localPort = Convert.ToInt32(textBox2.Text);
-
-            endPoint = new IPEndPoint(remoteAddress, remotePort);
-            
-            /* Tworzenia watka do odbierania wiadomosci */
-            receiveThread = new Thread(new ThreadStart(ReceiveMessage));
-            receiveThread.Start();
-
-            /* Uruchomienie nagrywania kamerki */
-            videoSource = new VideoCaptureDevice(recordingDevices[comboBox1.SelectedIndex].MonikerString);
-            videoSource.NewFrame += new NewFrameEventHandler(VideoSource_NewFrame);
-            videoSource.Start();
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            /* Zatrzymanie nagrywania kamerki */
-            videoSource.Stop();
-        }
-         
         public void GetFile()
         {
             try
@@ -189,9 +163,13 @@ namespace videochat_udp
             textBox1.Visible = false;
             textBox2.Visible = false;
             textBox3.Visible = false;
-            button1.Visible = false;
-            button2.Visible = false;
+            connectBtn.Visible = false;
+            disconnectBtn.Visible = false;
             comboBox1.Visible = false;
+            audioLbl.Visible = false;
+            remoteAudioLbl.Visible = false;
+            localAudio.Visible = false;
+            remoteAudio.Visible = false;
             optionPanel.Size = new Size(42, 467);
             headerPanel.BackColor = Color.FromArgb(1, 46, 103);
             optionPanel.BackColor = Color.FromArgb(156, 172, 191);
@@ -201,17 +179,21 @@ namespace videochat_udp
         {
             if (!isMenuActivated)
             {
-                optionPanel.Size = new Size(261, 467);
+                optionPanel.Size = new Size(266, 467);
                 label1.Visible = true;
                 localLbl.Visible = true;
                 remoteLbl.Visible = true;
                 textBox1.Visible = true;
                 textBox2.Visible = true;
                 textBox3.Visible = true;
-                button1.Visible = true;
-                button2.Visible = true;
+                connectBtn.Visible = true;
+                disconnectBtn.Visible = true;
                 comboBox1.Visible = true;
                 isMenuActivated = true;
+                audioLbl.Visible = true;
+                remoteAudioLbl.Visible = true;
+                localAudio.Visible = true;
+                remoteAudio.Visible = true;
             }
             else
             {
@@ -221,11 +203,14 @@ namespace videochat_udp
                 textBox1.Visible = false;
                 textBox2.Visible = false;
                 textBox3.Visible = false;
-                button1.Visible = false;
-                button2.Visible = false;
+                connectBtn.Visible = false;
+                disconnectBtn.Visible = false;
                 comboBox1.Visible = false;
+                audioLbl.Visible = false;
+                remoteAudioLbl.Visible = false;
+                localAudio.Visible = false;
+                remoteAudio.Visible = false;
                 optionPanel.Size = new Size(42, 467);
-                
                 isMenuActivated = false;
             }
         }
@@ -248,6 +233,31 @@ namespace videochat_udp
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void connectBtn_Click(object sender, EventArgs e)
+        {
+            /* Inicjalizacja portow oraz adresu */
+            remoteAddress = IPAddress.Parse(textBox1.Text);
+            remotePort = Convert.ToInt32(textBox3.Text);
+            localPort = Convert.ToInt32(textBox2.Text);
+
+            endPoint = new IPEndPoint(remoteAddress, remotePort);
+
+            /* Tworzenia watka do odbierania wiadomosci */
+            receiveThread = new Thread(new ThreadStart(ReceiveMessage));
+            receiveThread.Start();
+
+            /* Uruchomienie nagrywania kamerki */
+            videoSource = new VideoCaptureDevice(recordingDevices[comboBox1.SelectedIndex].MonikerString);
+            videoSource.NewFrame += new NewFrameEventHandler(VideoSource_NewFrame);
+            videoSource.Start();
+        }
+
+        private void disconnectBtn_Click(object sender, EventArgs e)
+        {
+            /* Zatrzymanie nagrywania kamerki */
+            videoSource.Stop();
         }
 
         private void microphoneBox_Click(object sender, EventArgs e)
