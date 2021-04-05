@@ -11,6 +11,7 @@ using System.IO;
 using System.Threading;
 using System.Xml.Serialization;
 using System.Threading.Tasks;
+using NAudio.Wave;
 
 namespace videochat_udp
 {
@@ -46,6 +47,12 @@ namespace videochat_udp
         private System.Drawing.Point lastPoint;
         #endregion
 
+        /* INICJALIZACJA DLA AUDIO */
+        Socket audioClient, listenAudioSocket;
+        WaveIn inputAudio;
+        WaveOut outputAudio;
+        BufferedWaveProvider bufferStream = new BufferedWaveProvider(new WaveFormat(8000, 16, 1));
+        Thread listeningAudioThread;
 
         public Form1()
         {
@@ -256,6 +263,45 @@ namespace videochat_udp
             videoSource = new VideoCaptureDevice(recordingDevices[comboBox1.SelectedIndex].MonikerString);
             videoSource.NewFrame += new NewFrameEventHandler(VideoSource_NewFrame);
             videoSource.Start();
+
+            inputAudio = new WaveIn();
+            outputAudio = new WaveOut();
+            outputAudio.Init(bufferStream);
+            /* PRACA Z DZWIEKIEM */
+            inputAudio.DataAvailable += Voice_Input;
+            inputAudio.WaveFormat = new WaveFormat(8000, 16, 1);
+            audioClient = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            listenAudioSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            listeningAudioThread = new Thread(new ThreadStart(GetAudio));
+            listeningAudioThread.Start();
+            inputAudio.StartRecording();
+        }
+
+        private void GetAudio()
+        {
+            IPEndPoint localIP = new IPEndPoint(IPAddress.Parse(textBox1.Text), Convert.ToInt32(localAudio.Text));
+            listenAudioSocket.Bind(localIP);
+            outputAudio.Play();
+            EndPoint remoteIp = new IPEndPoint(IPAddress.Any, 0);
+            while (true)
+            {
+                byte[] data = new byte[65535];
+                int receivedBytes = listenAudioSocket.ReceiveFrom(data, ref remoteIp);
+                bufferStream.AddSamples(data, 0, receivedBytes);
+            }
+        }
+
+        private void Voice_Input(object sender, WaveInEventArgs e)
+        {
+            try
+            {
+                IPEndPoint remotePoint = new IPEndPoint(IPAddress.Parse(textBox1.Text), Convert.ToInt32(remoteAudio.Text));
+                audioClient.SendTo(e.Buffer, remotePoint);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void disconnectBtn_Click(object sender, EventArgs e)
