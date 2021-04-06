@@ -444,9 +444,9 @@
         private System.Windows.Forms.Label audioLbl;
         private MaterialSkin.Controls.MaterialLabel materialLabel1;
         private System.Windows.Forms.Label label2;
+        public System.Windows.Forms.ComboBox comboBox1;
         public System.Windows.Forms.PictureBox friendVideoPictureBox;
         public System.Windows.Forms.PictureBox myVideoPictureBox;
-        public System.Windows.Forms.ComboBox comboBox1;
     }
 }
 
