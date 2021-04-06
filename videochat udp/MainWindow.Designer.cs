@@ -1,6 +1,6 @@
 ﻿namespace videochat_udp
 {
-    partial class Form1
+    partial class MainWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -387,7 +387,7 @@
             this.friendVideoPictureBox.TabIndex = 16;
             this.friendVideoPictureBox.TabStop = false;
             // 
-            // Form1
+            // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -402,7 +402,7 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Name = "Form1";
+            this.Name = "MainWindow";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.headerPanel.ResumeLayout(false);
@@ -423,11 +423,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label localLbl;
         private System.Windows.Forms.Label remoteLbl;
-        private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.PictureBox friendVideoPictureBox;
-        private System.Windows.Forms.PictureBox myVideoPictureBox;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Panel headerPanel;
@@ -447,6 +444,9 @@
         private System.Windows.Forms.Label audioLbl;
         private MaterialSkin.Controls.MaterialLabel materialLabel1;
         private System.Windows.Forms.Label label2;
+        public System.Windows.Forms.ComboBox comboBox1;
+        public System.Windows.Forms.PictureBox friendVideoPictureBox;
+        public System.Windows.Forms.PictureBox myVideoPictureBox;
     }
 }
 
