@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             this.label1 = new System.Windows.Forms.Label();
             this.localLbl = new System.Windows.Forms.Label();
             this.remoteLbl = new System.Windows.Forms.Label();
@@ -38,7 +39,6 @@
             this.panel4 = new System.Windows.Forms.Panel();
             this.headerPanel = new System.Windows.Forms.Panel();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.label2 = new System.Windows.Forms.Label();
             this.optionPanel = new System.Windows.Forms.Panel();
             this.materialLabel1 = new MaterialSkin.Controls.MaterialLabel();
             this.remoteAudio = new MaterialSkin.Controls.MaterialSingleLineTextField();
@@ -55,6 +55,7 @@
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.myVideoPictureBox = new System.Windows.Forms.PictureBox();
             this.friendVideoPictureBox = new System.Windows.Forms.PictureBox();
+            this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.headerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.optionPanel.SuspendLayout();
@@ -63,6 +64,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.myVideoPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.friendVideoPictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -141,8 +143,8 @@
             // 
             // headerPanel
             // 
+            this.headerPanel.Controls.Add(this.pictureBox2);
             this.headerPanel.Controls.Add(this.pictureBox1);
-            this.headerPanel.Controls.Add(this.label2);
             this.headerPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.headerPanel.Location = new System.Drawing.Point(2, 2);
             this.headerPanel.Name = "headerPanel";
@@ -162,17 +164,6 @@
             this.pictureBox1.TabIndex = 1;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label2.ForeColor = System.Drawing.Color.White;
-            this.label2.Location = new System.Drawing.Point(10, 16);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(173, 16);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "VideoChat by @maybedot";
             // 
             // optionPanel
             // 
@@ -387,6 +378,16 @@
             this.friendVideoPictureBox.TabIndex = 16;
             this.friendVideoPictureBox.TabStop = false;
             // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox2.Image")));
+            this.pictureBox2.Location = new System.Drawing.Point(2, 9);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(142, 34);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox2.TabIndex = 2;
+            this.pictureBox2.TabStop = false;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -406,7 +407,6 @@
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.headerPanel.ResumeLayout(false);
-            this.headerPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.optionPanel.ResumeLayout(false);
             this.optionPanel.PerformLayout();
@@ -415,6 +415,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.myVideoPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.friendVideoPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -443,10 +444,10 @@
         private System.Windows.Forms.Label remoteAudioLbl;
         private System.Windows.Forms.Label audioLbl;
         private MaterialSkin.Controls.MaterialLabel materialLabel1;
-        private System.Windows.Forms.Label label2;
         public System.Windows.Forms.ComboBox comboBox1;
         public System.Windows.Forms.PictureBox friendVideoPictureBox;
         public System.Windows.Forms.PictureBox myVideoPictureBox;
+        private System.Windows.Forms.PictureBox pictureBox2;
     }
 }
 

@@ -65,8 +65,8 @@ namespace videochat_udp
             localAudio.Visible = false;
             remoteAudio.Visible = false;
             optionPanel.Size = new Size(42, 467);
-            headerPanel.BackColor = Color.FromArgb(1, 46, 103);
-            optionPanel.BackColor = Color.FromArgb(156, 172, 191);
+            headerPanel.BackColor = Color.FromArgb(0,0,0);
+            optionPanel.BackColor = Color.FromArgb(112, 128, 144);
         }
 
         private void pictureBox4_Click(object sender, EventArgs e)
