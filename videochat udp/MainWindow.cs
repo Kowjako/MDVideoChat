@@ -17,6 +17,8 @@ namespace videochat_udp
 {
     public partial class MainWindow : Form
     {
+        /* Obiekt klasy uzytkownika */
+        Client newUser = null;
 
         /* Zmienne opisujace wideo urzadzenia */
         public FilterInfoCollection recordingDevices = null;
@@ -123,6 +125,7 @@ namespace videochat_udp
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
+            newUser?.Disconnect();
             this.Close();
         }
 
@@ -134,14 +137,13 @@ namespace videochat_udp
             string localVideoPort = textBox2.Text;
             string remoteAudioPort = remoteAudio.Text;
             string localAudioPort = localAudio.Text;
-            Client newUser = new Client(remoteAddress, localAudioPort, remoteAudioPort, localVideoPort, remoteVideoPort, this, recordingDevices[comboBox1.SelectedIndex].MonikerString);
+            newUser = new Client(remoteAddress, localAudioPort, remoteAudioPort, localVideoPort, remoteVideoPort, this, recordingDevices[comboBox1.SelectedIndex].MonikerString);
         }
-
 
         private void disconnectBtn_Click(object sender, EventArgs e)
         {
-            /* Zatrzymanie nagrywania kamerki */
-            videoSource.Stop();
+            newUser.Disconnect();
+            newUser = null;
         }
 
         private void microphoneBox_Click(object sender, EventArgs e)

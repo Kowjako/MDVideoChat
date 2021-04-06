@@ -28,7 +28,7 @@ namespace videochat_udp
         Thread listeningAudioThread, listeningVideoThread;
         
         /* Klient do odbierania wideo */
-        UdpClient client;
+        UdpClient videoClient;
 
         /* Klient do odbierania oraz wysylki audio */
         Socket audioClient, listeningAudioSocket, listeningVideoSocket;
@@ -163,7 +163,7 @@ namespace videochat_udp
 
         public void GetVideo()
         {
-            client = new UdpClient(localVideoPort);
+            videoClient = new UdpClient(localVideoPort);
             while (true)
             {
                 /* Usuniecie odebranego obrazka poprzedniego */
@@ -178,7 +178,7 @@ namespace videochat_udp
                         for (int i = 0; i < 3; i++)
                         {
                             /* Pobranie kolejnych danych */
-                            Byte[] arrImage = client.Receive(ref endP);
+                            Byte[] arrImage = videoClient.Receive(ref endP);
                             /* Dopisanie danych do strumienia */
                             ms.Write(arrImage, 0, arrImage.Length);
                             /* Jezeli odebrany datagram <60000 to znaczy ze jest koncowy datagram wiec konczymy */
@@ -195,6 +195,44 @@ namespace videochat_udp
                     MessageBox.Show("Get file error: " + eR.ToString());
                 }
             }
+        }
+
+        public void Disconnect()
+        {
+            CloseAudio();
+            CloseVideo();
+            CloseClient();
+        }
+
+        private void CloseAudio()
+        {
+            listeningAudioSocket?.Close();
+            if (outputAudio != null)
+            {
+                outputAudio.Stop();
+                outputAudio.Dispose();
+                outputAudio = null;
+            }
+            if (inputAudio != null)
+            {
+                inputAudio.StopRecording();
+                inputAudio.Dispose();
+                inputAudio = null;
+            }
+        }
+
+        private void CloseVideo()
+        {
+            videoSource.Stop();
+            clientView.myVideoPictureBox.Image = null;
+            clientView.myVideoPictureBox.Invalidate();
+            listeningVideoSocket?.Close();
+        }
+
+        private void CloseClient()
+        {
+            audioClient?.Close();
+            videoClient?.Close();
         }
     }
 }
