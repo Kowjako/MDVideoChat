@@ -152,11 +152,13 @@ namespace videochat_udp
             {
                 isMicrophoneEnabled = false;
                 microphoneBox.Image = Properties.Resources.offmicrophone;
+                newUser.ChangeMicrophoneStatus(true);
             }
             else
             {
                 isMicrophoneEnabled = true;
                 microphoneBox.Image = Properties.Resources.microphone;
+                newUser.ChangeMicrophoneStatus(false);
             }
         }
 
@@ -166,11 +168,13 @@ namespace videochat_udp
             {
                 isCameraEnabled = false;
                 cameraBox.Image = Properties.Resources.offcamera;
+                newUser.ChangeCameraStatus(true);
             }
             else
             {
                 isCameraEnabled = true;
                 cameraBox.Image = Properties.Resources.camera;
+                newUser.ChangeCameraStatus(false);
             }
         }
     }

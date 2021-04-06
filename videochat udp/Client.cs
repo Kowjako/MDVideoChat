@@ -234,5 +234,23 @@ namespace videochat_udp
             audioClient?.Close();
             videoClient?.Close();
         }
+
+        public void ChangeMicrophoneStatus(bool isDisabled)
+        {
+            if (isDisabled)
+            {
+                inputAudio.StopRecording();
+            }
+            else inputAudio.StartRecording();
+        }
+
+        public void ChangeCameraStatus(bool isDisabled)
+        {
+            if (isDisabled)
+            {
+                videoSource.Stop();
+            }
+            else videoSource.Start();
+        }
     }
 }
