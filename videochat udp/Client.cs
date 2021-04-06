@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace videochat_udp
 {
-    class Client
+    public class Client
     {
         private Bitmap actualFrame;
 
@@ -49,18 +49,22 @@ namespace videochat_udp
 
         MainWindow clientView;
 
-        public Client(string remoteAddress, int localAudioPort, int remoteAudio, int localVideoPort, int remoteVideo, MainWindow window)
+        public Client(string remoteAddress, string localAudioPort, string remoteAudio, string localVideoPort, string remoteVideo, MainWindow window, string videoMoniker)
         {
+            recordingDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+
             this.remoteVideo = new IPEndPoint(IPAddress.Parse(remoteAddress), Convert.ToInt32(remoteVideo));
             this.remoteAudio = new IPEndPoint(IPAddress.Parse(remoteAddress), Convert.ToInt32(remoteAudio));
 
-            this.localAudioPort = localAudioPort;
-            this.localVideoPort = localVideoPort;
+            this.localAudioPort = Convert.ToInt32(localAudioPort);
+            this.localVideoPort = Convert.ToInt32(localVideoPort);
 
             this.remoteAddress = remoteAddress;
 
-            videoSource = new VideoCaptureDevice(recordingDevices[clientView.comboBox1.SelectedIndex].MonikerString);
-            videoSource.NewFrame += new NewFrameEventHandler(VideoSource_NewFrame);         
+            videoSource = new VideoCaptureDevice(videoMoniker);
+            videoSource.NewFrame += new NewFrameEventHandler(VideoSource_NewFrame);
+
+            bufferStream = new BufferedWaveProvider(new WaveFormat(8000, 16, 1));
 
             inputAudio = new WaveIn();
             outputAudio = new WaveOut();
@@ -74,7 +78,6 @@ namespace videochat_udp
 
             clientView = window;
 
-            bufferStream = new BufferedWaveProvider(new WaveFormat(8000, 16, 1));
             listeningAudioThread = new Thread(new ThreadStart(GetAudio));
             listeningAudioThread.Start();
             listeningVideoThread = new Thread(new ThreadStart(GetVideo));
