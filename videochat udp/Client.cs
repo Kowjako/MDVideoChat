@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -46,6 +47,8 @@ namespace videochat_udp
         private IPEndPoint remoteVideo, remoteAudio;
         private int localAudioPort, localVideoPort;
         private string remoteAddress;
+
+        bool cameraOffFlag = false;
 
         MainWindow clientView;
 
@@ -167,7 +170,7 @@ namespace videochat_udp
             while (true)
             {
                 /* Usuniecie odebranego obrazka poprzedniego */
-                if (clientView.myVideoPictureBox.Image != null) clientView.myVideoPictureBox.Image.Dispose();
+                if (clientView.friendVideoPictureBox.Image != null) clientView.friendVideoPictureBox.Image.Dispose();
                 /* Pobranie nowego obrazka */
                 try
                 {
@@ -179,15 +182,33 @@ namespace videochat_udp
                         {
                             /* Pobranie kolejnych danych */
                             Byte[] arrImage = videoClient.Receive(ref endP);
+                            if (Encoding.UTF8.GetString(arrImage) == "cameraoff")
+                            {
+                                clientView.friendVideoPictureBox.Image = Properties.Resources.cameraOff;
+                                /* Zamykamy strumien aby Image nie odczytal niepoprawny ciag */
+                                ms.Close();
+                                break;
+                            }
+                            else
+                            if (Encoding.UTF8.GetString(arrImage) == "cameraon")
+                            {
+                                /* Zamykamy strumien aby Image nie odczytal niepoprawny ciag */
+                                ms.Close();
+                                break;
+                            }
                             /* Dopisanie danych do strumienia */
                             ms.Write(arrImage, 0, arrImage.Length);
                             /* Jezeli odebrany datagram <60000 to znaczy ze jest koncowy datagram wiec konczymy */
                             if (arrImage.Length < 60000) break;
                         }
-                        /* Konwertowanie tablicy bajtow na obrazek */
-                        Image rcvdImage = (Bitmap)((new ImageConverter()).ConvertFrom(ms.ToArray()));
-                        /* Aktualizacja odebranego obrazka */
-                        clientView.friendVideoPictureBox.Image = filterSize.Apply((Bitmap)rcvdImage);
+                        /* Sprawdzanie czy strumien nie jest zamkniety */
+                        if (ms.CanRead)
+                        {
+                            /* Konwertowanie tablicy bajtow na obrazek */
+                            Image rcvdImage = (Bitmap)((new ImageConverter()).ConvertFrom(ms.ToArray()));
+                            /* Aktualizacja odebranego obrazka */
+                            clientView.friendVideoPictureBox.Image = filterSize.Apply((Bitmap)rcvdImage);
+                        }
                     }
                 }
                 catch (Exception eR)
@@ -246,11 +267,16 @@ namespace videochat_udp
 
         public void ChangeCameraStatus(bool isDisabled)
         {
-            if (isDisabled)
+            if (isDisabled && videoSource.IsRunning)
             {
-                videoSource.Stop();
+                videoSource.SignalToStop();
+                listeningVideoSocket.SendTo(Encoding.UTF8.GetBytes("cameraoff"), remoteVideo);
             }
-            else videoSource.Start();
+            else
+            {
+                videoSource.Start();
+                listeningVideoSocket.SendTo(Encoding.UTF8.GetBytes("cameraon"), remoteVideo);
+            }
         }
     }
 }

@@ -168,7 +168,12 @@ namespace videochat_udp
             {
                 isCameraEnabled = false;
                 cameraBox.Image = Properties.Resources.offcamera;
-                newUser.ChangeCameraStatus(true);
+                this.Invoke(new MethodInvoker(delegate () { newUser.ChangeCameraStatus(true); }));
+                if (myVideoPictureBox.Image != null) this.Invoke(new MethodInvoker(delegate () {
+                    myVideoPictureBox.Image.Dispose();
+                    myVideoPictureBox.Invalidate();
+                }));
+                myVideoPictureBox.Image = Properties.Resources.cameraOff;
             }
             else
             {
