@@ -15,7 +15,7 @@ using NAudio.Wave;
 
 namespace videochat_udp
 {
-    public partial class Form1 : Form
+    public partial class MainWindow : Form
     {
         private Bitmap actualFrame;
 
@@ -54,7 +54,7 @@ namespace videochat_udp
         BufferedWaveProvider bufferStream = new BufferedWaveProvider(new WaveFormat(8000, 16, 1));
         Thread listeningAudioThread;
 
-        public Form1()
+        public MainWindow()
         {
             InitializeComponent();
         }
@@ -71,7 +71,6 @@ namespace videochat_udp
             }
             /* Domyslnie wybierane pierwsze urzadzenie */ 
             comboBox1.SelectedIndex = 0;
-            videoSource = new VideoCaptureDevice();
         }
 
         private void VideoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
