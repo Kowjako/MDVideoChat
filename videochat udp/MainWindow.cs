@@ -25,7 +25,7 @@ namespace videochat_udp
         public VideoCaptureDevice videoSource = null;
 
         #region Program variables
-        bool isMenuActivated = false, isMicrophoneEnabled = true, isCameraEnabled = true;
+        bool isMenuActivated = false, isMicrophoneEnabled = true, isCameraEnabled = true, isConnected = false;
         private System.Drawing.Point lastPoint;
         #endregion
 
@@ -47,6 +47,14 @@ namespace videochat_udp
             }
             /* Domyslnie wybierane pierwsze urzadzenie */ 
             comboBox1.SelectedIndex = 0;
+
+            /* Tworzenie kolekcji dostepnych audio urzadzen */
+            for (int n = 0; n < WaveIn.DeviceCount; n++)
+            {
+                var caps = WaveIn.GetCapabilities(n);
+                comboBox2.Items.Add((caps.ProductName.Substring(caps.ProductName.IndexOf('(')+1)).TrimEnd(')'));
+            }
+            comboBox2.SelectedIndex = 0;
         }
 
         private void SetStyles()
@@ -60,13 +68,14 @@ namespace videochat_udp
             connectBtn.Visible = false;
             disconnectBtn.Visible = false;
             comboBox1.Visible = false;
+            comboBox2.Visible = false;
             audioLbl.Visible = false;
             remoteAudioLbl.Visible = false;
             localAudio.Visible = false;
             remoteAudio.Visible = false;
             optionPanel.Size = new Size(42, 467);
             headerPanel.BackColor = Color.FromArgb(0,0,0);
-            optionPanel.BackColor = Color.FromArgb(112, 128, 144);
+            optionPanel.BackColor = Color.FromArgb(70, 130, 180);
         }
 
         private void pictureBox4_Click(object sender, EventArgs e)
@@ -83,6 +92,7 @@ namespace videochat_udp
                 connectBtn.Visible = true;
                 disconnectBtn.Visible = true;
                 comboBox1.Visible = true;
+                comboBox2.Visible = true;
                 isMenuActivated = true;
                 audioLbl.Visible = true;
                 remoteAudioLbl.Visible = true;
@@ -100,6 +110,7 @@ namespace videochat_udp
                 connectBtn.Visible = false;
                 disconnectBtn.Visible = false;
                 comboBox1.Visible = false;
+                comboBox2.Visible = false;
                 audioLbl.Visible = false;
                 remoteAudioLbl.Visible = false;
                 localAudio.Visible = false;
@@ -126,6 +137,7 @@ namespace videochat_udp
         private void pictureBox1_Click(object sender, EventArgs e)
         {
             newUser?.Disconnect();
+            isConnected = false;
             this.Close();
         }
 
@@ -138,6 +150,7 @@ namespace videochat_udp
             string remoteAudioPort = remoteAudio.Text;
             string localAudioPort = localAudio.Text;
             newUser = new Client(remoteAddress, localAudioPort, remoteAudioPort, localVideoPort, remoteVideoPort, this, recordingDevices[comboBox1.SelectedIndex].MonikerString);
+            isConnected = true;
         }
 
         private void disconnectBtn_Click(object sender, EventArgs e)
@@ -152,13 +165,13 @@ namespace videochat_udp
             {
                 isMicrophoneEnabled = false;
                 microphoneBox.Image = Properties.Resources.offmicrophone;
-                newUser.ChangeMicrophoneStatus(true);
+                if(isConnected) newUser.ChangeMicrophoneStatus(true);
             }
             else
             {
                 isMicrophoneEnabled = true;
                 microphoneBox.Image = Properties.Resources.microphone;
-                newUser.ChangeMicrophoneStatus(false);
+                if(isConnected) newUser.ChangeMicrophoneStatus(false);
             }
         }
 
@@ -168,18 +181,25 @@ namespace videochat_udp
             {
                 isCameraEnabled = false;
                 cameraBox.Image = Properties.Resources.offcamera;
-                this.Invoke(new MethodInvoker(delegate () { newUser.ChangeCameraStatus(true); }));
-                if (myVideoPictureBox.Image != null) this.Invoke(new MethodInvoker(delegate () {
-                    myVideoPictureBox.Image.Dispose();
-                    myVideoPictureBox.Invalidate();
-                }));
-                myVideoPictureBox.Image = Properties.Resources.cameraOff;
+                this.Invoke(new MethodInvoker(delegate ()
+                {
+                    if (isConnected)
+                    {
+                        newUser.ChangeCameraStatus(true);
+                        if (myVideoPictureBox.Image != null) this.Invoke(new MethodInvoker(delegate ()
+                        {
+                            myVideoPictureBox.Image.Dispose();
+                            myVideoPictureBox.Invalidate();
+                        }));
+                        myVideoPictureBox.Image = Properties.Resources.cameraOff;
+                    }
+                })); 
             }
             else
             {
                 isCameraEnabled = true;
                 cameraBox.Image = Properties.Resources.camera;
-                newUser.ChangeCameraStatus(false);
+                if(isConnected) newUser.ChangeCameraStatus(false);
             }
         }
     }
