@@ -11,6 +11,6 @@ VideoChat napisany na platfromie Windows Forms. Realizowany za pomocą UDP proto
 7️⃣ Realizacja full-duplex wysyłania audio [✅]  
 8️⃣ Przerobienie z wersji surowej do wersji obiektowej [✅]    
 9️⃣ Realizacja wyłączania mikrofonu oraz kamerki [✅]  
-1️⃣0️⃣ Sprawdzanie wpisanych adresów oraz portów [✅]
+1️⃣0️⃣ Sprawdzanie wpisanych adresów oraz portów [✅]  
 1️⃣1️⃣ Przetestowanie kompletnego programu [✅]
 
