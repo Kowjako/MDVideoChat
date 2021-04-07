@@ -57,6 +57,7 @@
             this.myVideoPictureBox = new System.Windows.Forms.PictureBox();
             this.friendVideoPictureBox = new System.Windows.Forms.PictureBox();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.headerPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -72,7 +73,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.Black;
-            this.label1.Location = new System.Drawing.Point(6, 55);
+            this.label1.Location = new System.Drawing.Point(6, 60);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(63, 13);
             this.label1.TabIndex = 2;
@@ -81,7 +82,7 @@
             // localLbl
             // 
             this.localLbl.AutoSize = true;
-            this.localLbl.Location = new System.Drawing.Point(7, 85);
+            this.localLbl.Location = new System.Drawing.Point(6, 89);
             this.localLbl.Name = "localLbl";
             this.localLbl.Size = new System.Drawing.Size(60, 13);
             this.localLbl.TabIndex = 8;
@@ -90,7 +91,7 @@
             // remoteLbl
             // 
             this.remoteLbl.AutoSize = true;
-            this.remoteLbl.Location = new System.Drawing.Point(6, 116);
+            this.remoteLbl.Location = new System.Drawing.Point(6, 120);
             this.remoteLbl.Name = "remoteLbl";
             this.remoteLbl.Size = new System.Drawing.Size(71, 13);
             this.remoteLbl.TabIndex = 9;
@@ -179,6 +180,7 @@
             // optionPanel
             // 
             this.optionPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.optionPanel.Controls.Add(this.label2);
             this.optionPanel.Controls.Add(this.comboBox2);
             this.optionPanel.Controls.Add(this.materialLabel1);
             this.optionPanel.Controls.Add(this.remoteAudio);
@@ -400,6 +402,15 @@
             this.comboBox2.Size = new System.Drawing.Size(245, 21);
             this.comboBox2.TabIndex = 25;
             // 
+            // label2
+            // 
+            this.label2.ForeColor = System.Drawing.Color.Black;
+            this.label2.Location = new System.Drawing.Point(9, 360);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(244, 22);
+            this.label2.TabIndex = 26;
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -461,6 +472,7 @@
         public System.Windows.Forms.PictureBox myVideoPictureBox;
         private System.Windows.Forms.PictureBox pictureBox2;
         public System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.Label label2;
     }
 }
 

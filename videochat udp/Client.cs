@@ -48,8 +48,6 @@ namespace videochat_udp
         private int localAudioPort, localVideoPort;
         private string remoteAddress;
 
-        bool cameraOffFlag = false;
-
         MainWindow clientView;
 
         public Client(string remoteAddress, string localAudioPort, string remoteAudio, string localVideoPort, string remoteVideo, MainWindow window, string videoMoniker)

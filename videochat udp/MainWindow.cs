@@ -149,8 +149,12 @@ namespace videochat_udp
             string localVideoPort = textBox2.Text;
             string remoteAudioPort = remoteAudio.Text;
             string localAudioPort = localAudio.Text;
-            newUser = new Client(remoteAddress, localAudioPort, remoteAudioPort, localVideoPort, remoteVideoPort, this, recordingDevices[comboBox1.SelectedIndex].MonikerString);
-            isConnected = true;
+            /* Sprawdzenie czy wpisane adresy oraz porty są poprawne */
+            if (CheckAddressAndPort(remoteAddress, remoteVideoPort, localVideoPort, remoteAudioPort, localAudioPort))
+            {
+                newUser = new Client(remoteAddress, localAudioPort, remoteAudioPort, localVideoPort, remoteVideoPort, this, recordingDevices[comboBox1.SelectedIndex].MonikerString);
+                isConnected = true;
+            }
         }
 
         private void disconnectBtn_Click(object sender, EventArgs e)
@@ -200,6 +204,65 @@ namespace videochat_udp
                 isCameraEnabled = true;
                 cameraBox.Image = Properties.Resources.camera;
                 if(isConnected) newUser.ChangeCameraStatus(false);
+            }
+        }
+
+        private bool CheckAddressAndPort(params string[] param)
+        {
+            IPAddress validateIP = null;
+            if(IPAddress.TryParse(param[0], out validateIP))
+            {
+                if(String.IsNullOrEmpty(param[1]))
+                {
+                    label2.Text = "remoteVideo cannot be empty";
+                    return false;
+                }
+                if (String.IsNullOrEmpty(param[2]))
+                {
+                    label2.Text = "localVideo cannot be empty";
+                    return false;
+                }
+                if (String.IsNullOrEmpty(param[3]))
+                {
+                    label2.Text = "remoteAideo cannot be empty";
+                    return false;
+                }
+                if (String.IsNullOrEmpty(param[4]))
+                {
+                    label2.Text = "localAideo cannot be empty";
+                    return false;
+                }
+                int remoteVideo = Convert.ToInt32(param[1]);
+                int localVideo = Convert.ToInt32(param[2]);
+                int remoteAudio = Convert.ToInt32(param[3]);
+                int localAudio = Convert.ToInt32(param[4]);
+                if(remoteAudio>40000 || remoteAudio<1000)
+                {
+                    label2.Text = "Check validity of remoteAudio Port";
+                    return false;
+                }
+                if (localVideo > 40000 || localVideo < 1000)
+                {
+                    label2.Text = "Check validity of localVideo Port";
+                    return false;
+                }
+                if (localAudio > 40000 || localAudio < 1000)
+                {
+                    label2.Text = "Check validity of localAudio Port";
+                    return false;
+                }
+                if (remoteVideo > 40000 || remoteVideo < 1000)
+                {
+                    label2.Text = "Check validity of remoteVideo Port";
+                    return false;
+                }
+                label2.Text = "";
+                return true;
+            }
+            else
+            {
+                label2.Text = "Check validity of IP Address";
+                return false;
             }
         }
     }
