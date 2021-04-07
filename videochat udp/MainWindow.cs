@@ -159,7 +159,7 @@ namespace videochat_udp
 
         private void disconnectBtn_Click(object sender, EventArgs e)
         {
-            newUser.Disconnect();
+            newUser?.Disconnect();
             newUser = null;
         }
 
